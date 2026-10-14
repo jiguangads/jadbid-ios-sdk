@@ -1,0 +1,1 @@
+framework module JAdbidPangleAdapter { umbrella header "JAdbidPangleAdapter.h" export * }

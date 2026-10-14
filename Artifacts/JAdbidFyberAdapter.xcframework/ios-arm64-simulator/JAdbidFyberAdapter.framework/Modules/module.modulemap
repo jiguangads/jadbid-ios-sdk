@@ -1,0 +1,1 @@
+framework module JAdbidFyberAdapter { umbrella header "JAdbidFyberAdapter.h" export * }

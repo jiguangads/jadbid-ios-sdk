@@ -1,0 +1,1 @@
+framework module JAdbidVungleAdapter { umbrella header "JAdbidVungleAdapter.h" export * }

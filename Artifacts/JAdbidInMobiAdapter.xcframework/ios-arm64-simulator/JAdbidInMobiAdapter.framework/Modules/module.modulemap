@@ -1,0 +1,1 @@
+framework module JAdbidInMobiAdapter { umbrella header "JAdbidInMobiAdapter.h" export * }

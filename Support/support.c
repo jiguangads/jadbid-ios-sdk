@@ -1,0 +1,1 @@
+void JAdbidDistributionSupport(void) {}

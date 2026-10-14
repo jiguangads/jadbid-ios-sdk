@@ -1,0 +1,1 @@
+framework module JAdbidFacebookAdapter { umbrella header "JAdbidFacebookAdapter.h" export * }

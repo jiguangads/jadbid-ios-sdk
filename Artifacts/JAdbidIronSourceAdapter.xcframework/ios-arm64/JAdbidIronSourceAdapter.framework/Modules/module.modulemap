@@ -1,0 +1,1 @@
+framework module JAdbidIronSourceAdapter { umbrella header "JAdbidIronSourceAdapter.h" export * }
