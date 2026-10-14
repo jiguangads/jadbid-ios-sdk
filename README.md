@@ -4,7 +4,7 @@
 
 > 当前不是正式发行版：候选包的 `release_ready` 为 `false`，发行许可条款及最终真机广告验收尚待确认。本分支不代表已发布 `1.0.0` Tag 或已提交 CocoaPods Trunk；不要把 `dev` 当作稳定版本用于生产。
 
-当前本地验证通过 Podspec 解析、CocoaPods quick lint 和 Swift Package 清单解析；完整 CocoaPods lint 在候选环境出现 Adapter 链接失败，尚未通过。两份对外 Demo 使用本地候选包完成 11 源依赖安装与模拟器构建，但尚未从本公开分支重新验证远端安装。
+已验证 Podspec 解析、CocoaPods quick lint 和 Swift Package 清单解析。从本仓库远端 `dev` 分支拉取后，Objective-C Demo 完成 11 源 CocoaPods 依赖安装与模拟器构建，SPM 消费工程完成远端分支解析。完整 CocoaPods lint 在候选环境出现 Adapter 链接失败，尚未通过；远端 Swift Demo 构建与真机广告验收仍待执行。
 
 ## CocoaPods 开发集成
 
