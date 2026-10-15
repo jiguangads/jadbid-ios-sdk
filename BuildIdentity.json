@@ -1,0 +1,11 @@
+{
+  "backend_version": "15.13.0",
+  "build": "29",
+  "configuration": "Release",
+  "dirty": false,
+  "minimum_ios": "15.0",
+  "revision": "d059bc3e89be2010ac3222b7c7700a82e29895de",
+  "schema_version": 1,
+  "sdk_version": "1.0.0",
+  "source_digest": "f53d46e4bb9de9d5c3333d1ad27d76f4068a202d3e677c2eb7bc1cead637daf3"
+}

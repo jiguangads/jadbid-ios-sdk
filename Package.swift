@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
- name: "JAdbidSDK", platforms: [.iOS(.v15)],
+ name: "JAdbidSDK", platforms: [.iOS("15.0")],
  products: [
  .library(name: "JAdbidCore", targets: ["JAdbidCore", "JAdbidSupport"]),
  .library(name: "JAdbidAdMob", targets: ["JAdbidCore", "JAdbidAdMobAdapter", "JAdbidSupport"]),
