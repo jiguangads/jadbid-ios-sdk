@@ -1,34 +1,34 @@
 # JAdbid iOS SDK 二进制分发仓库
 
-本仓库的 `dev` 分支是 **1.0.0 公开候选包**，包含 Release 构型的 `JAdbidCore.xcframework`、11 个广告源 Adapter、资源、隐私清单，以及 CocoaPods 和 Swift Package Manager 描述文件。源码与内部 Demo 不在本仓库；对外集成说明和 Objective-C / Swift Demo 见 [iOS Guides](https://github.com/jiguangads/Adbid-SDK-iOS-Guides)。
+**jadbid-1.0.0-beta** 使用 SwiftPM Tag `1.0.0-beta`，包含 Release 构型的 `JAdbidCore.xcframework`、11 个广告源 Adapter、资源、隐私清单和 Swift Package 描述文件。源码与内部 Demo 不在本仓库；对外集成说明和 Objective-C / Swift Demo 见 [iOS Guides](https://github.com/jiguangads/Adbid-SDK-iOS-Guides)。
 
-> 当前不是正式发行版：候选包的 `release_ready` 为 `false`，发行许可条款及最终真机广告验收尚待确认。本分支不代表已发布 `1.0.0` Tag 或已提交 CocoaPods Trunk；不要把 `dev` 当作稳定版本用于生产。
+> 本次 beta 仅通过 SwiftPM 提供；不提交 CocoaPods Trunk。仓内 Podspec 仅保留为与 Tag 对齐的非发布元数据。JAdbid 静态 XCFramework 由宿主链接，不作为动态框架嵌入。
 
-当前候选 **build 29** 从干净源码提交 `d059bc3e89be2010ac3222b7c7700a82e29895de` 构建，SDK 版本仍为 `1.0.0`。Debug/Release 候选已通过 12 模块、双切片、隐私/资源和构建身份完整性校验；本仓库只提供 Release 构型。有限身份记录见 `BuildIdentity.json`，其中 `dirty=false`、`build=29`；`source_digest` 用于对应构建内容，不包含私有仓库地址或设备/账号数据。
+本版取自 Jenkins `jadbid-sdk-local` **build 2**，干净源码提交 `0947b737f05a11a50d84ee1b06f1b6140d3e3528`，原始 ZIP SHA-256 为 `dcdb2fcfe1fba2da2a71dd4655a1e2997dbd677d0a1ba764739be5be512f07fd`。包内 SDK 版本仍为 `1.0.0`，beta 是分发 Tag 而非重新编译的 SDK 版本。有限身份记录见 `BuildIdentity.json`，其中 `dirty=false`、`build=2`。本仓库只提供 Release 构型。
 
 本次候选包含加载中不提前报失败的修复与安全构建身份诊断。SDK普通日志在Debug或显式开启`debugMode`时可见，Release默认关闭普通事件；初始化身份只输出一次。Demo控制台事件和Debug开关由[Guides](https://github.com/jiguangads/Adbid-SDK-iOS-Guides)同步，筛选`[JAdbid]`与`[JAdbidDemo]`可区分来源；不输出原始厂商错误字典或设备标识。
 
-本次公开Podspec/SPM描述解析、资源与Core身份校验均通过；两语言远端安装/构建结果以Guides内固定的SDK公开提交及其验证说明为准，不能把可变`dev`分支当作已锁定版本。完整CocoaPods lint的AdMob链接问题、全厂商SPM完整消费和真机广告验收仍未通过最终验收。
+11 源按 Objective-C、Swift 各 11 个单源宿主执行 Release App 构建与最终资源检查；这不等同于真实广告填充、点击验收，也不代表同一 App 多源同装已获支持。
 
-## CocoaPods 开发集成
+## CocoaPods 状态（本次 beta 不发布）
 
 ```ruby
 platform :ios, '15.0'
 
 target 'YourApp' do
-  pod 'JAdbidSDK/Core', :git => 'https://github.com/jiguangads/jadbid-ios-sdk.git', :branch => 'dev'
+  pod 'JAdbidSDK/Core', :git => 'https://github.com/jiguangads/jadbid-ios-sdk.git', :commit => 'ae9cabf2dae1a389cc7943d149011bfbce3bbcb5'
   # 按需添加一个或多个广告源：
-  # pod 'JAdbidSDK/AdMob', :git => 'https://github.com/jiguangads/jadbid-ios-sdk.git', :branch => 'dev'
+  # pod 'JAdbidSDK/AdMob', :git => 'https://github.com/jiguangads/jadbid-ios-sdk.git', :commit => 'ae9cabf2dae1a389cc7943d149011bfbce3bbcb5'
 end
 ```
 
-Podspec 通过 subspec 声明所选广告源的厂商 SDK 精确依赖。默认仅使用 Core；不要在正式应用中照搬所有 11 个源。正式版发布前，Podspec 的 `source` 将从 `dev` 分支改为不可变版本 Tag，并独立验证 CocoaPods Trunk 可解析性。
+上述是当前在线旧提交的历史联调入口，不是本次 beta 包。Podspec 通过 subspec 声明厂商 SDK 依赖，但本次不进行 Trunk 发布、完整 lint 或 beta CocoaPods 验收。
 
 ## Swift Package Manager 开发集成
 
-在 Xcode 添加 `https://github.com/jiguangads/jadbid-ios-sdk.git`，选择 `dev` 分支及 `JAdbidCore` 或所需的 `JAdbid<Source>` 产品。当前 `Package.swift` 为 12 个本地 XCFramework 声明 binary target，**不自动安装厂商 SDK**；宿主须按选中广告源补齐对应厂商依赖及其传递依赖。
+在 Xcode 添加 `https://github.com/jiguangads/jadbid-ios-sdk.git`，选择精确版本 `1.0.0-beta` 及 `JAdbidCore` 或一个待测 `JAdbid<Source>` 产品。当前 `Package.swift` 为 12 个本地 XCFramework 声明 binary target，**不自动安装厂商 SDK**；宿主须按选中广告源补齐对应厂商依赖及其传递依赖。本次 SPM 全源验收按 11 个广告源分别建立单源宿主，不代表一个 App 同时接入多个源已验证。
 
-SPM 与手动集成还须在签名前把 `Resources/TradPlusAds.bundle` 和 `Resources/TradPlusADX.bundle` 复制到宿主主 Bundle；仓库内的 `copy_resources.py` 可用于该步骤。JAdbid 静态 XCFramework 只链接，不作为动态框架嵌入。宿主仍需检查最终 App 的隐私清单和申报。
+SPM 与手动集成还须在签名前把 `Resources/TradPlusAds.bundle`、`Resources/TradPlusADX.bundle` 及所选厂商要求的主 Bundle 资源复制到宿主。运行 `python3 copy_resources.py --help` 查看 `--source`、`--vendor-root` 与 `--verify-final`；该脚本每次仅支持一个源，最终校验会拒绝其它源资源，不能靠顺序调用实现同 App 多源。不能把脚本执行成功替代最终 App 资源检查。JAdbid 静态 XCFramework 只链接，不作为动态框架嵌入。宿主仍需检查最终 App 的隐私清单和申报。
 
 ## 内容与边界
 

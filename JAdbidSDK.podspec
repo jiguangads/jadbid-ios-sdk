@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name = 'JAdbidSDK'
-  s.version = '1.0.0'
+  s.version = '1.0.0-beta'
   s.summary = '基于TradPlus的iOS JAdbid标准聚合广告SDK'
   s.homepage = 'https://github.com/jiguangads/jadbid-ios-sdk'
   s.author = 'Jiguang'
-  s.license = { :type => 'Proprietary', :text => 'JAdbid 公开候选包的正式使用条款待发行方确认；第三方许可见 Licenses。' }
-  s.source = { :git => 'https://github.com/jiguangads/jadbid-ios-sdk.git', :branch => 'dev' }
+  s.license = { :type => 'Proprietary' }
+  s.source = { :git => 'https://github.com/jiguangads/jadbid-ios-sdk.git', :tag => s.version.to_s }
   s.ios.deployment_target = '15.0'
   s.static_framework = true
   s.default_subspec = 'Core'
