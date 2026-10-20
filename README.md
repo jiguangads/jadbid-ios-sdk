@@ -1,10 +1,10 @@
 # JAdbid iOS SDK 二进制分发仓库
 
-**jadbid-1.0.0-beta** 使用 SwiftPM Tag `1.0.0-beta`，包含 Release 构型的 `JAdbidCore.xcframework`、11 个广告源 Adapter、资源、隐私清单和 Swift Package 描述文件。源码与内部 Demo 不在本仓库；对外集成说明和 Objective-C / Swift Demo 见 [iOS Guides](https://github.com/jiguangads/Adbid-SDK-iOS-Guides)。
+**jadbid-1.0.0-beta.1** 使用 SwiftPM Tag `1.0.0-beta.1`，包含 Release 构型的 `JAdbidCore.xcframework`、11 个广告源 Adapter、资源、隐私清单和 Swift Package 描述文件。旧 Tag `1.0.0-beta` 保留不变。源码与内部 Demo 不在本仓库；对外集成说明和 Objective-C / Swift Demo 见 [iOS Guides](https://github.com/jiguangads/Adbid-SDK-iOS-Guides)。
 
 > 本次 beta 仅通过 SwiftPM 提供；不提交 CocoaPods Trunk。仓内 Podspec 仅保留为与 Tag 对齐的非发布元数据。JAdbid 静态 XCFramework 由宿主链接，不作为动态框架嵌入。
 
-本版取自 Jenkins `jadbid-sdk-local` **build 2**，干净源码提交 `0947b737f05a11a50d84ee1b06f1b6140d3e3528`，原始 ZIP SHA-256 为 `dcdb2fcfe1fba2da2a71dd4655a1e2997dbd677d0a1ba764739be5be512f07fd`。包内 SDK 版本仍为 `1.0.0`，beta 是分发 Tag 而非重新编译的 SDK 版本。有限身份记录见 `BuildIdentity.json`，其中 `dirty=false`、`build=2`。本仓库只提供 Release 构型。
+本版取自 Jenkins `jadbid-sdk-local` **build 4**，干净源码提交 `4634ec06b81da7718015aebdd3b025902f153765`，原始 Release ZIP SHA-256 为 `0723de7cfb5921120c6cb72f92dafd00b07531b9a800f547a5020e8dda043e47`。包内 SDK 版本仍为 `1.0.0`，beta.1 是分发 Tag 而非重新编译的 SDK 版本。有限身份记录见 `BuildIdentity.json`，其中 `dirty=false`、`build=4`。本仓库只提供 Release 构型。
 
 本次候选包含加载中不提前报失败的修复与安全构建身份诊断。SDK普通日志在Debug或显式开启`debugMode`时可见，Release默认关闭普通事件；初始化身份只输出一次。Demo控制台事件和Debug开关由[Guides](https://github.com/jiguangads/Adbid-SDK-iOS-Guides)同步，筛选`[JAdbid]`与`[JAdbidDemo]`可区分来源；不输出原始厂商错误字典或设备标识。
 
@@ -26,7 +26,7 @@ end
 
 ## Swift Package Manager 开发集成
 
-在 Xcode 添加 `https://github.com/jiguangads/jadbid-ios-sdk.git`，选择精确版本 `1.0.0-beta` 及 `JAdbidCore` 或一个待测 `JAdbid<Source>` 产品。当前 `Package.swift` 为 12 个本地 XCFramework 声明 binary target，**不自动安装厂商 SDK**；宿主须按选中广告源补齐对应厂商依赖及其传递依赖。本次 SPM 全源验收按 11 个广告源分别建立单源宿主，不代表一个 App 同时接入多个源已验证。
+在 Xcode 添加 `https://github.com/jiguangads/jadbid-ios-sdk.git`，选择精确版本 `1.0.0-beta.1` 及 `JAdbidCore` 或一个待测 `JAdbid<Source>` 产品。当前 `Package.swift` 为 12 个本地 XCFramework 声明 binary target，**不自动安装厂商 SDK**；宿主须按选中广告源补齐对应厂商依赖及其传递依赖。本次 SPM 全源验收按 11 个广告源分别建立单源宿主，不代表一个 App 同时接入多个源已验证。
 
 SPM 与手动集成还须在签名前把 `Resources/TradPlusAds.bundle`、`Resources/TradPlusADX.bundle` 及所选厂商要求的主 Bundle 资源复制到宿主。运行 `python3 copy_resources.py --help` 查看 `--source`、`--vendor-root` 与 `--verify-final`；该脚本每次仅支持一个源，最终校验会拒绝其它源资源，不能靠顺序调用实现同 App 多源。不能把脚本执行成功替代最终 App 资源检查。JAdbid 静态 XCFramework 只链接，不作为动态框架嵌入。宿主仍需检查最终 App 的隐私清单和申报。
 
