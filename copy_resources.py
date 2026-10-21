@@ -37,6 +37,18 @@ VENDOR = {
                'AppMetricaSynchronization.bundle'),
 }
 
+# Google 官方 SPM 二进制不提供 Pods 生成的这两只主 Bundle；其框架资源由 Xcode 处理。
+SPM_VENDOR_OVERRIDES = {'AdMob': ()}
+
+
+def required_vendor_bundles(source, integration):
+    """按宿主集成渠道返回主 Bundle 资源；未知渠道失败而非跳过检查。"""
+    if integration not in ('manual', 'pods', 'spm'):
+        raise ValueError(f'未知集成渠道：{integration}')
+    if integration == 'spm' and source in SPM_VENDOR_OVERRIDES:
+        return SPM_VENDOR_OVERRIDES[source]
+    return VENDOR.get(source, ())
+
 
 def bundle_digest(path):
     """拒绝链接和特殊文件，按相对路径与内容形成稳定摘要。"""
@@ -116,10 +128,12 @@ def check_bigo_privacy(bundle, original=None):
         raise ValueError('Bigo 隐私资源与厂商原件不一致')
 
 
-def copy_resources(resources, destination, source=None, vendor_root=None, verify_final=False):
+def copy_resources(resources, destination, source=None, vendor_root=None, verify_final=False,
+                   integration='manual'):
     """只复制选源白名单；冲突、缺件和非选源输入在写目标前拒绝。"""
     if source is not None and source not in VENDOR:
         raise ValueError(f'未知广告源：{source}')
+    selected_vendor_names = required_vendor_bundles(source, integration)
     if resources.is_symlink() or destination.is_symlink():
         raise ValueError('资源输入或目标不能是符号链接')
     if vendor_root is not None and source is None:
@@ -129,11 +143,11 @@ def copy_resources(resources, destination, source=None, vendor_root=None, verify
     bigo_manifest = bigo_privacy_manifest(vendor_root) if source == 'Bigo' else None
     if bigo_manifest is not None and 'BigoADS.bundle' not in candidates:
         generated['BigoADS.bundle'] = bigo_manifest
-    allowed = set(VENDOR.get(source, ()))
+    allowed = set(selected_vendor_names)
     unexpected = sorted(set(candidates) - allowed)
     if unexpected:
         raise ValueError('厂商目录含未选源或未知资源：' + ', '.join(unexpected))
-    names = CORE + VENDOR.get(source, ())
+    names = CORE + selected_vendor_names
     if not resources.is_dir():
         raise ValueError('JAdbid 资源目录不存在')
     for name in CORE:
@@ -213,10 +227,11 @@ def main():
     parser.add_argument('--source', choices=tuple(VENDOR))
     parser.add_argument('--vendor-root', type=Path)
     parser.add_argument('--verify-final', action='store_true')
+    parser.add_argument('--integration', choices=('manual', 'pods', 'spm'), default='manual')
     args = parser.parse_args()
     try:
         copy_resources(args.resources, args.destination, args.source, args.vendor_root,
-                       args.verify_final)
+                       args.verify_final, args.integration)
     except ValueError as error:
         parser.error(str(error))
 

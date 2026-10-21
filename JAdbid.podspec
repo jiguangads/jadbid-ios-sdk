@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'JAdbid'
-  s.version = '1.0.0-beta.4'
+  s.version = '1.0.0-beta.5'
   s.summary = '基于TradPlus的iOS JAdbid标准聚合广告SDK'
   s.homepage = 'https://github.com/jiguangads/jadbid-ios-sdk'
   s.author = 'Jiguang'
