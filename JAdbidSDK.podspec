@@ -1,21 +1,22 @@
 Pod::Spec.new do |s|
   s.name = 'JAdbidSDK'
-  s.version = '1.0.0-beta.1'
+  s.version = '1.0.0-beta.2'
   s.summary = '基于TradPlus的iOS JAdbid标准聚合广告SDK'
   s.homepage = 'https://github.com/jiguangads/jadbid-ios-sdk'
   s.author = 'Jiguang'
-  s.license = { :type => 'Proprietary' }
+  s.license = { :type => 'Proprietary', :file => 'NOTICE' }
   s.source = { :git => 'https://github.com/jiguangads/jadbid-ios-sdk.git', :tag => s.version.to_s }
   s.ios.deployment_target = '15.0'
   s.static_framework = true
   s.default_subspec = 'Core'
   s.subspec 'Core' do |core|
     core.vendored_frameworks = 'Artifacts/JAdbidCore.xcframework'
+    core.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
     core.resources = 'Resources/*.bundle'
     core.preserve_paths = 'Licenses/*'
     core.frameworks = 'UIKit', 'WebKit', 'StoreKit', 'CoreTelephony', 'SystemConfiguration', 'AVFoundation', 'AdSupport', 'CoreMotion', 'CoreLocation', 'Security', 'CoreMedia', 'SafariServices', 'AudioToolbox', 'MobileCoreServices', 'AppTrackingTransparency', 'JavaScriptCore', 'CoreGraphics', 'QuartzCore', 'MediaPlayer', 'AVKit', 'Accelerate', 'MessageUI', 'CoreImage', 'CoreVideo', 'ImageIO', 'VideoToolbox', 'CFNetwork', 'Network', 'Metal', 'MetalKit', 'Photos'
     core.libraries = 'c++', 'z', 'sqlite3', 'xml2', 'resolv'
-    core.user_target_xcconfig = { 'OTHER_LDFLAGS' => '$(inherited) -ObjC' }
+    core.user_target_xcconfig = { 'OTHER_LDFLAGS' => '$(inherited) -ObjC', 'ARCHS[sdk=iphonesimulator*]' => 'arm64' }
   end
   s.subspec 'AdMob' do |adapter|
     adapter.dependency 'JAdbidSDK/Core', s.version.to_s
