@@ -37,8 +37,19 @@ VENDOR = {
                'AppMetricaSynchronization.bundle'),
 }
 
-# Google 官方 SPM 二进制不提供 Pods 生成的这两只主 Bundle；其框架资源由 Xcode 处理。
-SPM_VENDOR_OVERRIDES = {'AdMob': ()}
+# 官方原生 SPM 包不生成 Pods 资源脚本中的同名 Bundle。这里只列须由本脚本
+# 放入 App 主目录的原始独立资源；框架隐私清单及 SPM 自动资源须另验最终 App。
+SPM_VENDOR_OVERRIDES = {
+    'AdMob': (),
+    'Bigo': (),
+    'Facebook': (),
+    'Fyber': (),
+    'IronSource': (),
+    'Pangle': ('PAGAdSDK.bundle',),
+    'Unity': (),
+    'Vungle': (),
+    'Yandex': ('MobileAdsBundle.bundle',),
+}
 
 
 def required_vendor_bundles(source, integration):
@@ -128,6 +139,38 @@ def check_bigo_privacy(bundle, original=None):
         raise ValueError('Bigo 隐私资源与厂商原件不一致')
 
 
+def check_bigo_spm_framework(vendor_root, destination, candidates):
+    """核对官方 6.1.0 所选切片及 App 中同一动态框架的内置资源。"""
+    if (vendor_root is None or vendor_root.is_symlink() or
+            vendor_root.name != 'BigoADS.framework' or not vendor_root.is_dir()):
+        raise ValueError('Bigo SPM 须提供所选切片的 BigoADS.framework')
+    original_bundle = vendor_root / 'BigoADSRes.bundle'
+    if candidates.get('BigoADSRes.bundle') != [original_bundle]:
+        raise ValueError('Bigo SPM 缺少框架内原始 BigoADSRes.bundle')
+    original_digest = bundle_digest(original_bundle)
+    original_privacy = vendor_root / 'PrivacyInfo.xcprivacy'
+    if original_privacy.is_symlink() or not original_privacy.is_file():
+        raise ValueError('Bigo SPM 缺少框架内原始隐私清单')
+    original_data = original_privacy.read_bytes()
+    try:
+        parsed = plistlib.loads(original_data)
+    except (ValueError, TypeError) as error:
+        raise ValueError('Bigo SPM 隐私清单格式无效') from error
+    if not isinstance(parsed, dict) or not any(key.startswith('NSPrivacy') for key in parsed):
+        raise ValueError('Bigo SPM 隐私清单字段无效')
+    embedded = destination / 'Frameworks/BigoADS.framework'
+    if embedded.is_symlink() or not embedded.is_dir():
+        raise ValueError('最终 App 缺少 BigoADS.framework')
+    if bundle_digest(embedded / 'BigoADSRes.bundle') != original_digest:
+        raise ValueError('最终 App 的 Bigo 框架内资源与厂商原件不一致')
+    embedded_privacy = embedded / 'PrivacyInfo.xcprivacy'
+    if embedded_privacy.is_symlink() or not embedded_privacy.is_file():
+        raise ValueError('最终 App 缺少 Bigo 框架内隐私清单')
+    if embedded_privacy.read_bytes() != original_data:
+        raise ValueError('最终 App 的 Bigo 隐私清单与厂商原件不一致')
+    candidates.pop('BigoADSRes.bundle')
+
+
 def copy_resources(resources, destination, source=None, vendor_root=None, verify_final=False,
                    integration='manual'):
     """只复制选源白名单；冲突、缺件和非选源输入在写目标前拒绝。"""
@@ -140,7 +183,10 @@ def copy_resources(resources, destination, source=None, vendor_root=None, verify
         raise ValueError('厂商资源目录必须同时指定广告源')
     candidates = vendor_bundles(vendor_root)
     generated = {}
-    bigo_manifest = bigo_privacy_manifest(vendor_root) if source == 'Bigo' else None
+    if source == 'Bigo' and integration == 'spm':
+        check_bigo_spm_framework(vendor_root, destination, candidates)
+    bigo_manifest = (bigo_privacy_manifest(vendor_root)
+                     if source == 'Bigo' and integration != 'spm' else None)
     if bigo_manifest is not None and 'BigoADS.bundle' not in candidates:
         generated['BigoADS.bundle'] = bigo_manifest
     allowed = set(selected_vendor_names)
